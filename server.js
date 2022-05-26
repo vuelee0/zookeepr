@@ -14,6 +14,9 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 // parse incoming JSON data
 app.use(express.json());
+// makes the CSS/JS files in our public folder a static resource so we do not 
+// have to specify server endpoint for every file
+app.use(express.static('public'));
 
 
 
@@ -70,7 +73,7 @@ function createNewAnimal(body, animalsArray) {
     const animal = body;
     animalsArray.push(animal);
     fs.writeFileSync(
-        path.join(_dirname, './data/animals.json'),
+        path.join(__dirname, './data/animals.json'),
         JSON.stringify({ animals: animalsArray }, null, 2)
     );
     // return finished code to post route for response
@@ -137,6 +140,23 @@ app.post('/api/animals', (req,res) => {
     }  
 });
 
+
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+app.get('/animals', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+// wildcard route, will redirect any route not previously defined above
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
 
 
 app.listen(PORT, () => {
